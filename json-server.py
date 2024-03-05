@@ -2,7 +2,7 @@ import json
 from http.server import HTTPServer
 from handler import HandleRequests, status
 
-from views import login_user, create_user
+from views import login_user, create_user, post_category
 
 
 class JSONServer(HandleRequests):
@@ -16,8 +16,8 @@ class JSONServer(HandleRequests):
         request_body = self.rfile.read(content_len)
         request_body = json.loads(request_body)
 
-        if url["requested_resource"] == "users":
-            test = create_user(request_body)
+        if url["requested_resource"] == "categories":
+            test = post_category(request_body)
             return self.response(
                 "endpoint is working",
                 status.HTTP_200_SUCCESS.value,
