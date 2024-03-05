@@ -4,6 +4,7 @@ from handler import HandleRequests, status
 
 from views import login_user, create_user
 from views import create_comment
+from views import create_tag
 
 
 class JSONServer(HandleRequests):
@@ -36,7 +37,7 @@ class JSONServer(HandleRequests):
             )
 
         if url["requested_resource"] == "tags":
-            successfully_created = create_comment(request_body)
+            successfully_created = create_tag(request_body)
             if successfully_created:
                 return self.response(
                     "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
