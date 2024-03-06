@@ -1,5 +1,6 @@
 import sqlite3
 import json
+from datetime import datetime
 
 
 def get_all_user_posts(url):
@@ -51,13 +52,14 @@ def create_post(post):
 
         db_cursor.execute(
             """ 
-            INSERT INTO Posts (user_id, category_id, title, image_url, content)
-            VALUES (?, ?, ?)
+            INSERT INTO Posts (user_id, category_id, title, publication_date, image_url, content, approved)
+            VALUES (?, ?, ?, ?, ?, ?, 1)
             """,
             (
                 post["user_id"],
                 post["category_id"],
                 post["title"],
+                datetime.now(),
                 post["image_url"],
                 post["content"],
             ),
