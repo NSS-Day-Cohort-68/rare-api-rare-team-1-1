@@ -1,5 +1,6 @@
 import sqlite3
 import json
+from datetime import datetime
 
 
 def get_all_user_posts(url):
@@ -42,3 +43,28 @@ def get_all_user_posts(url):
         serialized_posts = json.dumps(posts)
 
     return serialized_posts
+
+
+def create_post(post):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """ 
+            INSERT INTO Posts (user_id, category_id, title, publication_date, image_url, content, approved)
+            VALUES (?, ?, ?, ?, ?, ?, 1)
+            """,
+            (
+                post["user_id"],
+                post["category_id"],
+                post["title"],
+                datetime.now(),
+                post["image_url"],
+                post["content"],
+            ),
+        )
+
+        conn.commit()
+
+        return db_cursor.lastrowid
