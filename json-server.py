@@ -3,14 +3,27 @@ from json.decoder import JSONDecodeError
 from http.server import HTTPServer
 from handler import HandleRequests, status
 
-from views import login_user, create_user
+from views import login_user, create_user, get_all_user_posts
 from views import create_comment
 from views import create_tag
+from views import post_category
 
 
 class JSONServer(HandleRequests):
+
     def do_GET(self):
-        pass
+        response_body = ""
+        url = self.parse_url(self.path)
+
+        if url["requested_resource"] == "posts":
+            if url["pk"] == 0:
+                response_body = get_all_user_posts(url)
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+            else:
+                return self.response(
+                    "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                )
 
     def do_POST(self):
         url = self.parse_url(self.path)
@@ -58,6 +71,15 @@ class JSONServer(HandleRequests):
                 return self.response(
                     "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
                 )
+            
+        if url["requested_resource"] == "categories":
+            successfully_created = post_category(request_body)
+            if successfully_created:
+                return self.response(
+                    "Successfully created", status.HTTP_201_SUCCESS_CREATED.value,
+                )
+
+
 
             return self.response(
                 "Invalid data", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value

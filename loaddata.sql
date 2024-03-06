@@ -20,7 +20,6 @@ CREATE TABLE "DemotionQueue" (
   PRIMARY KEY (action, admin_id, approver_one_id)
 );
 
-
 CREATE TABLE "Subscriptions" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "follower_id" INTEGER,
@@ -88,3 +87,4 @@ CREATE TABLE "Categories" (
 INSERT INTO Categories ('label') VALUES ('News');
 INSERT INTO Tags ('label') VALUES ('JavaScript');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('happy', 'https://pngtree.com/so/happy');
+INSERT INTO Categories ('label') VALUES ('Jokes');
