@@ -42,3 +42,27 @@ def get_all_user_posts(url):
         serialized_posts = json.dumps(posts)
 
     return serialized_posts
+
+
+def create_post(post):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """ 
+            INSERT INTO Posts (user_id, category_id, title, image_url, content)
+            VALUES (?, ?, ?)
+            """,
+            (
+                post["user_id"],
+                post["category_id"],
+                post["title"],
+                post["image_url"],
+                post["content"],
+            ),
+        )
+
+        conn.commit()
+
+        return db_cursor.lastrowid
