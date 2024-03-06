@@ -87,15 +87,3 @@ CREATE TABLE "Categories" (
 INSERT INTO Categories ('label') VALUES ('News');
 INSERT INTO Tags ('label') VALUES ('JavaScript');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('happy', 'https://pngtree.com/so/happy');
-INSERT INTO Posts ('id', 'user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (1, 2, 3, "test", "date", "image_url", "testing", 1)
-INSERT INTO Posts ('id', 'user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (2, 1, 1, "test", "date", "image_url", "testing", 1)
-
-"id" INTEGER PRIMARY KEY AUTOINCREMENT,
-  "user_id" INTEGER,
-  "category_id" INTEGER,
-  "title" varchar,
-  "publication_date" date,
-  "image_url" varchar,
-  "content" varchar,
-  "approved" bit,
-  FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`)
