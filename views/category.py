@@ -12,6 +12,7 @@ def post_category(category_data):
             """,
             (category_data['label'],)
             )
+        conn.commit()
 
     return True if db_cursor.rowcount > 0 else False
 

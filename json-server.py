@@ -46,11 +46,11 @@ class JSONServer(HandleRequests):
                 )
             
         if url["requested_resource"] == "categories":
-            test = post_category(request_body)
-            return self.response(
-                "endpoint is working",
-                status.HTTP_200_SUCCESS.value,
-            )
+            successfully_created = post_category(request_body)
+            if successfully_created:
+                return self.response(
+                    "Successfully created", status.HTTP_201_SUCCESS_CREATED.value,
+                )
 
 
 
