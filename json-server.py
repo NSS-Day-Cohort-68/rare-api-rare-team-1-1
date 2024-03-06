@@ -5,6 +5,7 @@ from handler import HandleRequests, status
 from views import login_user, create_user, get_all_user_posts
 from views import create_comment
 from views import create_tag
+from views import create_posttag
 
 
 class JSONServer(HandleRequests):
@@ -50,6 +51,17 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "tags":
             successfully_created = create_tag(request_body)
+            if successfully_created:
+                return self.response(
+                    "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
+                )
+
+            return self.response(
+                "Invalid data", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+            )
+
+        if url["requested_resource"] == "posttags":
+            successfully_created = create_posttag(request_body)
             if successfully_created:
                 return self.response(
                     "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
