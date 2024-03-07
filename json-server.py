@@ -54,7 +54,7 @@ class JSONServer(HandleRequests):
             if not json.loads(token)["token"] == 0:
                 return self.response(token, status.HTTP_201_SUCCESS_CREATED.value)
             return self.response(
-                "Invalid data.", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
             )
 
         if url["requested_resource"] == "comments":
