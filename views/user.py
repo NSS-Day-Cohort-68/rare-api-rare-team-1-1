@@ -52,19 +52,18 @@ def create_user(user):
 
         db_cursor.execute(
             """
-        INSERT INTO Users (first_name, last_name, bio, email, username, password, profile_image_url, created_on, active) values (?, ?, ?, ?, ?, ?, ?, ?, 1)
+        INSERT INTO Users (first_name, last_name, email, username, created_on, active) values (?, ?, ?, ?, ?, 1)
         """,
             (
                 user["first_name"],
                 user["last_name"],
-                user["bio"],
                 user["email"],
                 user["username"],
-                user["password"],
-                user["profile_image_url"],
                 datetime.now(),
             ),
         )
+
+        conn.commit()
 
         row_id = db_cursor.lastrowid
 

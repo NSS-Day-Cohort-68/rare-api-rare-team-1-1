@@ -41,17 +41,7 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "users":
             try:
-                expected_user_keys = [
-                    "first_name",
-                    "last_name",
-                    "username",
-                    "email",
-                    "bio",
-                    "password",
-                    "profile_image_url",
-                    "created_on",
-                    "active",
-                ]
+                expected_user_keys = ["first_name", "last_name", "username", "email"]
                 for key in expected_user_keys:
                     value = request_body[key]
             except KeyError:
@@ -61,10 +51,11 @@ class JSONServer(HandleRequests):
                 )
 
             token = create_user(request_body)
-            return self.response(token, status.HTTP_201_SUCCESS_CREATED.value)
-        return self.response(
-            "Unexpected error occurred", status.HTTP_500_SERVER_ERROR.value
-        )
+            if not json.loads(token)["token"] == 0:
+                return self.response(token, status.HTTP_201_SUCCESS_CREATED.value)
+            return self.response(
+                "Invalid data.", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+            )
 
         if url["requested_resource"] == "comments":
             successfully_created = create_comment(request_body)
