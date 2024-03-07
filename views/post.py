@@ -70,7 +70,7 @@ def create_post(post):
         return db_cursor.lastrowid
 
 
-def get_post(pk, query_params=None):
+def get_post(pk):
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
