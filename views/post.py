@@ -68,3 +68,65 @@ def create_post(post):
         conn.commit()
 
         return db_cursor.lastrowid
+
+
+def get_post(pk, query_params=None):
+    if query_params and "_expand" in query_params:
+        with sqlite3.connect("./db.sqlite3") as conn:
+            conn.row_factory = sqlite3.Row
+            db_cursor = conn.cursor()
+
+            db_cursor.execute(
+                """
+                SELECT
+                    p.id AS post_id,
+                    p.title AS post_title,
+                    p.content AS post_content,
+                    p.publication_date AS publication_date,
+                    u.id AS user_id,
+                    u.username AS username
+                FROM Posts p
+                LEFT JOIN Users u ON u.id = user_id
+                WHERE p.id = ?
+                """,
+                (pk,),
+            )
+            query_results = db_cursor.fetchone()
+
+            if query_results:
+                serialized_post = json.dumps(dict(query_results))
+                return serialized_post
+            else:
+                return json.dumps({"error": "Post not found"})
+
+    else:
+        with sqlite3.connect("./db.sqlite3") as conn:
+            conn.row_factory = sqlite3.Row
+            db_cursor = conn.cursor()
+
+            db_cursor.execute(
+                """
+                    SELECT
+                        p.id,
+                        p.title,
+                        p.content,
+                        p.publication_date,
+                        u.username
+                    FROM Posts p
+                    LEFT JOIN Users u ON p.user_id = u.id
+                    WHERE p.id = ?
+                """,
+                (pk,),
+            )
+            query_results = db_cursor.fetchone()
+
+            if query_results:
+                serialized_post = json.dumps(dict(query_results))
+                return serialized_post
+            else:
+                return json.dumps({"error": "Post not found"})
+
+            dictionary_version_of_object = dict(query_results)
+            serialized_order = json.dumps(dictionary_version_of_object)
+
+    return serialized_order
