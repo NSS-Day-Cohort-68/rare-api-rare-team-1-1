@@ -83,7 +83,7 @@ def get_post(pk, query_params=None):
                     p.content AS post_content,
                     p.publication_date AS publication_date,
                     p.image_url AS image_url,
-                    u.id AS user_id,
+                    p.user_id AS user_id,
                     u.username AS username
                 FROM Posts p
                 LEFT JOIN Users u ON u.id = user_id
