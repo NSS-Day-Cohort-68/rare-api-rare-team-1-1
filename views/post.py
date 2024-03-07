@@ -82,7 +82,7 @@ def get_post(pk, query_params=None):
                     p.title AS post_title,
                     p.content AS post_content,
                     p.publication_date AS publication_date,
-                    p.image_url AS image_url
+                    p.image_url AS image_url,
                     u.id AS user_id,
                     u.username AS username
                 FROM Posts p
