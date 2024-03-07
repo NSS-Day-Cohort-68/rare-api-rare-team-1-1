@@ -1,4 +1,5 @@
 import json
+from json.decoder import JSONDecodeError
 from http.server import HTTPServer
 from handler import HandleRequests, status
 
@@ -29,15 +30,32 @@ class JSONServer(HandleRequests):
     def do_POST(self):
         url = self.parse_url(self.path)
 
-        content_len = int(self.headers.get("content-length", 0))
-        request_body = self.rfile.read(content_len)
-        request_body = json.loads(request_body)
+        try:
+            content_len = int(self.headers.get("content-length", 0))
+            request_body = self.rfile.read(content_len)
+            request_body = json.loads(request_body)
+        except JSONDecodeError:
+            return self.response(
+                "Error -- No information was provided.",
+                status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
+            )
 
         if url["requested_resource"] == "users":
-            test = create_user(request_body)
+            try:
+                expected_user_keys = ["first_name", "last_name", "username", "email"]
+                for key in expected_user_keys:
+                    value = request_body[key]
+            except KeyError:
+                return self.response(
+                    "Incomplete user information. Please provide values for first_name, last_name, username, and email.",
+                    status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
+                )
+
+            token = create_user(request_body)
+            if not json.loads(token)["token"] == 0:
+                return self.response(token, status.HTTP_201_SUCCESS_CREATED.value)
             return self.response(
-                "endpoint is working",
-                status.HTTP_200_SUCCESS.value,
+                "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
             )
 
         if url["requested_resource"] == "comments":
