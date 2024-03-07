@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 
-def get_all_user_posts(url):
+def get_all_user_posts(pk):
 
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
@@ -24,7 +24,7 @@ def get_all_user_posts(url):
                 WHERE p.user_id = ?
                 ORDER BY p.publication_date DESC
             """,
-            (int(url["query_params"]["user_id"][0]),),
+            (pk,),
         )
 
         query_results = db_cursor.fetchall()
@@ -68,3 +68,33 @@ def create_post(post):
         conn.commit()
 
         return db_cursor.lastrowid
+
+
+def get_post(pk):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """
+                SELECT
+                    p.id AS post_id,
+                    p.title AS post_title,
+                    p.content AS post_content,
+                    p.publication_date AS publication_date,
+                    p.image_url AS image_url,
+                    p.user_id AS user_id,
+                    u.username AS username
+                FROM Posts p
+                LEFT JOIN Users u ON u.id = user_id
+                WHERE p.id = ?
+                """,
+            (pk,),
+        )
+        query_results = db_cursor.fetchone()
+
+        if query_results:
+            serialized_post = json.dumps(dict(query_results))
+            return serialized_post
+        else:
+            return json.dumps({"error": "Post not found"})
