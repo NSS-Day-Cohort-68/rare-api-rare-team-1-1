@@ -46,26 +46,25 @@ def create_user(user):
     Returns:
         json string: Contains the token of the newly created user
     """
-    with sqlite3.connect("./rare-api-rare-team-1/db.sqlite3") as conn:
+    with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
         db_cursor.execute(
             """
-        INSERT INTO Users (first_name, last_name, username, email, password, bio, profile_image_url, created_on, active) values (?, ?, ?, ?, ?, ?, ?, ?, 1)
+        INSERT INTO Users (first_name, last_name, email, username, created_on, active) values (?, ?, ?, ?, ?, 1)
         """,
             (
                 user["first_name"],
                 user["last_name"],
-                user["username"],
                 user["email"],
-                user["password"],
-                user["bio"],
-                "test url",
+                user["username"],
                 datetime.now(),
             ),
         )
 
-        id = db_cursor.lastrowid
+        conn.commit()
 
-        return json.dumps({"token": id, "valid": True})
+        row_id = db_cursor.lastrowid
+
+        return json.dumps({"token": row_id, "valid": True})
