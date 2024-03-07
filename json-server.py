@@ -3,7 +3,7 @@ from json.decoder import JSONDecodeError
 from http.server import HTTPServer
 from handler import HandleRequests, status
 
-from views import login_user, create_user, get_all_user_posts
+from views import login_user, create_user, get_all_user_posts, get_post
 from views import create_comment
 from views import create_tag
 from views import create_post
@@ -21,10 +21,13 @@ class JSONServer(HandleRequests):
                 response_body = get_all_user_posts(url)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-            else:
-                return self.response(
-                    "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
-                )
+            response_body = get_post(url["pk"])
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        else:
+            return self.response(
+                "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+            )
 
     def do_POST(self):
         url = self.parse_url(self.path)
