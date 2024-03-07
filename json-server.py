@@ -35,7 +35,7 @@ class JSONServer(HandleRequests):
             request_body = json.loads(request_body)
         except JSONDecodeError:
             return self.response(
-                "Error -- No user information was provided.",
+                "Error -- No information was provided.",
                 status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
             )
 
