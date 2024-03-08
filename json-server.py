@@ -25,6 +25,12 @@ class JSONServer(HandleRequests):
             response_body = get_post(url["pk"])
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
+        elif url["requested_resource"] == "users":
+            if "email" in url["query_params"]:
+                user_email = url["query_params"]["email"][0]
+                user_token = login_user(user_email)
+                if not user_token["valid"]:
+                    self.response("User")
         else:
             return self.response(
                 "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
