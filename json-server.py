@@ -3,7 +3,13 @@ from json.decoder import JSONDecodeError
 from http.server import HTTPServer
 from handler import HandleRequests, status
 
-from views import login_user, create_user, get_all_user_posts, get_post
+from views import (
+    login_user,
+    create_user,
+    get_all_user_posts,
+    get_post,
+    find_email_match,
+)
 from views import create_comment
 from views import create_tag
 from views import create_post
@@ -27,10 +33,21 @@ class JSONServer(HandleRequests):
 
         elif url["requested_resource"] == "users":
             if "email" in url["query_params"]:
-                user_email = url["query_params"]["email"][0]
-                user_token = login_user(user_email)
+                requested_email = url["query_params"]["email"][0]
+                # check_for_duplicate = find_email_match(requested_email)
+                user_token = login_user(requested_email)
                 if "valid" in user_token:
                     self.response(user_token, status.HTTP_200_SUCCESS.value)
+                # if "email_exists" in check_for_duplicate:
+                #     return self.response(
+                #         check_for_duplicate, status.HTTP_200_SUCCESS.value
+                #     )
+                else:
+                    return self.response(
+                        "Unexpected error occurred",
+                        status.HTTP_500_SERVER_ERROR.value,
+                    )
+
         else:
             return self.response(
                 "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
@@ -61,7 +78,7 @@ class JSONServer(HandleRequests):
                 )
 
             token = create_user(request_body)
-            if not json.loads(token)["token"] == 0:
+            if json.loads(token)["token"] > 0:
                 return self.response(token, status.HTTP_201_SUCCESS_CREATED.value)
             return self.response(
                 "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
