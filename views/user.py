@@ -68,3 +68,25 @@ def create_user(user):
         row_id = db_cursor.lastrowid
 
         return json.dumps({"token": row_id, "valid": True})
+
+
+def find_username_match(username):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """
+        SELECT id, username FROM Users WHERE username = ?
+            """,
+            (username,),
+        )
+
+        user_match = db_cursor.fetchone()
+
+        if user_match is not None:
+            response = {"username_exists": True}
+        else:
+            response = {"username_exists": False}
+
+        return json.dumps(response)
