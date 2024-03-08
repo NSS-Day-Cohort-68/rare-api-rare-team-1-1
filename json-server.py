@@ -29,8 +29,8 @@ class JSONServer(HandleRequests):
             if "email" in url["query_params"]:
                 user_email = url["query_params"]["email"][0]
                 user_token = login_user(user_email)
-                if not user_token["valid"]:
-                    self.response("User")
+                if "valid" in user_token:
+                    self.response(user_token, status.HTTP_200_SUCCESS.value)
         else:
             return self.response(
                 "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
