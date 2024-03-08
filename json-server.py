@@ -8,7 +8,7 @@ from views import (
     create_user,
     get_all_user_posts,
     get_post,
-    find_username_match,
+    find_email_match,
 )
 from views import create_comment
 from views import create_tag
@@ -32,10 +32,10 @@ class JSONServer(HandleRequests):
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         elif url["requested_resource"] == "users":
-            if "username" in url["query_params"]:
-                requested_username = url["query_params"]["username"][0]
-                check_for_duplicate = find_username_match(requested_username)
-                if "username_exists" in check_for_duplicate:
+            if "email" in url["query_params"]:
+                requested_email = url["query_params"]["email"][0]
+                check_for_duplicate = find_email_match(requested_email)
+                if "email_exists" in check_for_duplicate:
                     return self.response(
                         check_for_duplicate, status.HTTP_200_SUCCESS.value
                     )
