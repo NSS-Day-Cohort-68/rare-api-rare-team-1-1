@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 
-def login_user(user):
+def login_user(email):
     """Checks for the user in the database
 
     Args:
@@ -21,10 +21,9 @@ def login_user(user):
             """
             select id, username
             from Users
-            where username = ?
-            and password = ?
+            where email = ?
         """,
-            (user["username"], user["password"]),
+            (email,),
         )
 
         user_from_db = db_cursor.fetchone()
@@ -68,25 +67,3 @@ def create_user(user):
         row_id = db_cursor.lastrowid
 
         return json.dumps({"token": row_id, "valid": True})
-
-
-def find_email_match(email):
-    with sqlite3.connect("./db.sqlite3") as conn:
-        conn.row_factory = sqlite3.Row
-        db_cursor = conn.cursor()
-
-        db_cursor.execute(
-            """
-        SELECT id, email FROM Users WHERE email = ?
-            """,
-            (email,),
-        )
-
-        user_match = db_cursor.fetchone()
-
-        if user_match is not None:
-            response = {"email_exists": True}
-        else:
-            response = {"email_exists": False}
-
-        return json.dumps(response)
