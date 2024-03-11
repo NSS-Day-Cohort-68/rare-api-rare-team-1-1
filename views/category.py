@@ -30,6 +30,7 @@ def get_categories():
         categories = [row[0] for row in db_cursor.fetchall()]
         serialized_categories = json.dumps(categories)
         return serialized_categories
+    
 
 
 
