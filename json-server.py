@@ -25,16 +25,18 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "posts":
             if url["pk"] == 0:
-                response_body = get_all_user_posts(url)
+                if "user_id" in url["query_params"]:
+                    logged_in_user_id = url["query_params"]["user_id"][0]
+                    response_body = get_all_user_posts(logged_in_user_id)
+                    return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+            else:
+                response_body = get_post(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-            response_body = get_post(url["pk"])
-            return self.response(response_body, status.HTTP_200_SUCCESS.value)
-        
         elif url["requested_resource"] == "categories":
             response_body = get_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
-
 
         elif url["requested_resource"] == "users":
             if "email" in url["query_params"]:

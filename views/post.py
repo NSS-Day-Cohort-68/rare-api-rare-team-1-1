@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 
-def get_all_user_posts(pk):
+def get_all_user_posts(logged_in_user_id):
 
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
@@ -24,7 +24,7 @@ def get_all_user_posts(pk):
                 WHERE p.user_id = ?
                 ORDER BY p.publication_date DESC
             """,
-            (pk,),
+            (logged_in_user_id,),
         )
 
         query_results = db_cursor.fetchall()
