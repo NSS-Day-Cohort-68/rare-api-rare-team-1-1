@@ -3,7 +3,12 @@ from json.decoder import JSONDecodeError
 from http.server import HTTPServer
 from handler import HandleRequests, status
 
-from views import login_user, create_user, get_all_user_posts, get_post
+from views import (
+    login_user,
+    create_user,
+    get_all_user_posts,
+    get_post,
+)
 from views import create_comment
 from views import create_tag
 from views import create_post
@@ -24,6 +29,18 @@ class JSONServer(HandleRequests):
 
             response_body = get_post(url["pk"])
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        elif url["requested_resource"] == "users":
+            if "email" in url["query_params"]:
+                requested_email = url["query_params"]["email"][0]
+                user_token = login_user(requested_email)
+                if "valid" in user_token:
+                    self.response(user_token, status.HTTP_200_SUCCESS.value)
+                else:
+                    return self.response(
+                        "Unexpected error occurred",
+                        status.HTTP_500_SERVER_ERROR.value,
+                    )
 
         else:
             return self.response(
@@ -55,66 +72,117 @@ class JSONServer(HandleRequests):
                 )
 
             token = create_user(request_body)
-            if not json.loads(token)["token"] == 0:
+            if json.loads(token)["token"] > 0:
                 return self.response(token, status.HTTP_201_SUCCESS_CREATED.value)
             return self.response(
                 "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
             )
 
         if url["requested_resource"] == "comments":
+            try:
+                expected_comment_keys = ["post_id", "author_id", "content"]
+                for key in expected_comment_keys:
+                    value = request_body[key]
+            except KeyError:
+                return self.response(
+                    "Incomplete user information. Please provide values for post_id, author_id, content.",
+                    status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
+                )
+
             successfully_created = create_comment(request_body)
             if successfully_created:
                 return self.response(
                     "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
                 )
-
             return self.response(
-                "Invalid data", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
             )
 
         if url["requested_resource"] == "categories":
+            try:
+                expected_category_keys = ["label"]
+                for key in expected_category_keys:
+                    value = request_body[key]
+            except KeyError:
+                return self.response(
+                    "Incomplete user information. Please provide values for category label.",
+                    status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
+                )
+
             successfully_created = post_category(request_body)
             if successfully_created:
                 return self.response(
                     "Successfully created",
                     status.HTTP_201_SUCCESS_CREATED.value,
                 )
-
             return self.response(
-                "Invalid data", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
             )
 
         if url["requested_resource"] == "tags":
+            try:
+                expected_tag_keys = ["label"]
+                for key in expected_tag_keys:
+                    value = request_body[key]
+            except KeyError:
+                return self.response(
+                    "Incomplete user information. Please provide values for tag label.",
+                    status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
+                )
+
             successfully_created = create_tag(request_body)
             if successfully_created:
                 return self.response(
                     "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
                 )
-
             return self.response(
-                "Invalid data", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
             )
 
         if url["requested_resource"] == "posts":
+            try:
+                expected_post_keys = [
+                    "user_id",
+                    "category_id",
+                    "title",
+                    "image_url",
+                    "content",
+                ]
+                for key in expected_post_keys:
+                    value = request_body[key]
+            except KeyError:
+                return self.response(
+                    "Incomplete user information. Please provide values for user_id, category_id, title, image_url, and content.",
+                    status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
+                )
+
             successfully_created = create_post(request_body)
             if successfully_created:
                 return self.response(
                     "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
                 )
-
             return self.response(
-                "Invalid data", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
             )
 
         if url["requested_resource"] == "posttags":
+            try:
+                expected_posttag_keys = ["post_id", "tag_id"]
+                for key in expected_posttag_keys:
+                    value = request_body[key]
+            except KeyError:
+                return self.response(
+                    "Incomplete user information. Please provide values for post_id and tag_id.",
+                    status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
+                )
+
             successfully_created = create_posttag(request_body)
             if successfully_created:
                 return self.response(
                     "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
                 )
-
             return self.response(
-                "Invalid data", status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value
+                "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
             )
 
     def do_PUT(self):

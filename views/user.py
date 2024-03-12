@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 
-def login_user(user):
+def login_user(email):
     """Checks for the user in the database
 
     Args:
@@ -21,10 +21,9 @@ def login_user(user):
             """
             select id, username
             from Users
-            where username = ?
-            and password = ?
+            where email = ?
         """,
-            (user["username"], user["password"]),
+            (email,),
         )
 
         user_from_db = db_cursor.fetchone()

@@ -1,5 +1,4 @@
-from .user import login_user
-from .user import create_user
+from .user import login_user, create_user
 from .post import get_all_user_posts
 from .post import get_post
 from .post import create_post
