@@ -10,7 +10,7 @@ from views import (
     get_post,
 )
 from views import create_comment
-from views import create_tag
+from views import create_tag, get_and_sort_tags
 from views import create_post
 from views import post_category
 from views import create_posttag
@@ -28,6 +28,10 @@ class JSONServer(HandleRequests):
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
             response_body = get_post(url["pk"])
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        elif url["requested_resource"] == "tags":
+            response_body = get_and_sort_tags()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         elif url["requested_resource"] == "users":
