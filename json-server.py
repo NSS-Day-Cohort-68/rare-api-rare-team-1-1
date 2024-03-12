@@ -14,6 +14,7 @@ from views import create_tag, get_and_sort_tags
 from views import create_post
 from views import post_category
 from views import create_posttag
+from views import get_categories
 
 
 class JSONServer(HandleRequests):
@@ -29,6 +30,11 @@ class JSONServer(HandleRequests):
 
             response_body = get_post(url["pk"])
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
+        elif url["requested_resource"] == "categories":
+            response_body = get_categories()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
 
         elif url["requested_resource"] == "tags":
             response_body = get_and_sort_tags()
