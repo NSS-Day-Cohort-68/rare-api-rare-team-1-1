@@ -56,6 +56,7 @@ def get_all_posts():
         LEFT JOIN Users AS u ON p.user_id = u.id
         LEFT JOIN Categories AS c ON p.category_id = c.id
         WHERE p.publication_date <= ?
+        AND p.approved = 1
         ORDER BY p.publication_date DESC
             """,
             (datetime.today(),),
