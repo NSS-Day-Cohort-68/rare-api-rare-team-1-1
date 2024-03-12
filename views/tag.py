@@ -28,7 +28,7 @@ def get_and_sort_tags():
         db_cursor.execute(
             """
         SELECT id, label FROM Tags
-        ORDER BY label
+        ORDER BY label COLLATE NOCASE ASC
             """
         )
 
