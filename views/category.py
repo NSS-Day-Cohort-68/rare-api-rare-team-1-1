@@ -20,6 +20,7 @@ def post_category(category_data):
 
 def get_categories():
     with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
         db_cursor.execute(
@@ -28,6 +29,6 @@ def get_categories():
             ORDER BY label ASC
             """
         )
-        categories = [row[0] for row in db_cursor.fetchall()]
+        categories = [dict(row) for row in db_cursor.fetchall()]
         serialized_categories = json.dumps(categories)
         return serialized_categories
