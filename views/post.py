@@ -52,7 +52,7 @@ def get_all_posts():
 
         db_cursor.execute(
             """
-        SELECT p.id, p.title, p.publication_date, p.user_id, u.username, p.category_id, c.label FROM Posts AS p
+        SELECT p.id, p.title, p.publication_date, p.user_id, u.first_name, u.last_name, u.email, u.username, p.category_id, c.label FROM Posts AS p
         LEFT JOIN Users AS u ON p.user_id = u.id
         LEFT JOIN Categories AS c ON p.category_id = c.id
         WHERE p.publication_date <= ?
@@ -66,7 +66,13 @@ def get_all_posts():
 
         posts = []
         for row in response:
-            user = {"id": row["user_id"], "username": row["username"]}
+            user = {
+                "id": row["user_id"],
+                "first_name": row["first_name"],
+                "last_name": row["last_name"],
+                "email": row["email"],
+                "username": row["username"],
+            }
             category = {"id": row["category_id"], "label": row["label"]}
             post = {
                 "id": row["id"],

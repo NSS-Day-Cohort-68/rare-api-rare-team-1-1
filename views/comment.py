@@ -1,5 +1,6 @@
 import sqlite3
 import json
+from datetime import datetime
 
 
 def create_comment(comment_data):
@@ -9,13 +10,14 @@ def create_comment(comment_data):
 
         db_cursor.execute(
             """ 
-            INSERT INTO Comments (author_id, post_id, content)
-            VALUES (?, ?, ?)
+            INSERT INTO Comments (author_id, post_id, content, created_on)
+            VALUES (?, ?, ?, ?)
             """,
             (
                 comment_data["author_id"],
                 comment_data["post_id"],
                 comment_data["content"],
+                datetime.now(),
             ),
         )
 
