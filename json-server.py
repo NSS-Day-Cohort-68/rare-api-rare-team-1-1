@@ -3,12 +3,18 @@ from json.decoder import JSONDecodeError
 from http.server import HTTPServer
 from handler import HandleRequests, status
 
-from views import login_user, create_user, get_all_user_posts, get_post
+from views import (
+    login_user,
+    create_user,
+    get_all_user_posts,
+    get_post,
+)
 from views import create_comment
-from views import create_tag
+from views import create_tag, get_and_sort_tags
 from views import create_post
 from views import post_category
 from views import create_posttag
+from views import get_categories
 
 
 class JSONServer(HandleRequests):
@@ -24,6 +30,27 @@ class JSONServer(HandleRequests):
 
             response_body = get_post(url["pk"])
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        
+        elif url["requested_resource"] == "categories":
+            response_body = get_categories()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+
+        elif url["requested_resource"] == "tags":
+            response_body = get_and_sort_tags()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        elif url["requested_resource"] == "users":
+            if "email" in url["query_params"]:
+                requested_email = url["query_params"]["email"][0]
+                user_token = login_user(requested_email)
+                if "valid" in user_token:
+                    self.response(user_token, status.HTTP_200_SUCCESS.value)
+                else:
+                    return self.response(
+                        "Unexpected error occurred",
+                        status.HTTP_500_SERVER_ERROR.value,
+                    )
 
         else:
             return self.response(
@@ -55,7 +82,7 @@ class JSONServer(HandleRequests):
                 )
 
             token = create_user(request_body)
-            if not json.loads(token)["token"] == 0:
+            if json.loads(token)["token"] > 0:
                 return self.response(token, status.HTTP_201_SUCCESS_CREATED.value)
             return self.response(
                 "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
