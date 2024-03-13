@@ -120,8 +120,8 @@ def get_post(pk):
                     p.publication_date AS publication_date,
                     p.image_url AS image_url,
                     p.user_id AS user_id,
-                username AS username
-                FROM sts p
+                    u.username AS username
+                FROM Posts p
                 LEFT JOIN Users u ON u.id = user_id
                 WHERE p.id = ?
                 """,
