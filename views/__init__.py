@@ -6,3 +6,5 @@ from .comment import create_comment
 from .tag import create_tag
 from .category import post_category
 from .post_tag import create_posttag
+from .category import get_categories
+from .tag import get_and_sort_tags
