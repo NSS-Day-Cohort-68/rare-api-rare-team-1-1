@@ -172,8 +172,9 @@ class JSONServer(HandleRequests):
 
             successfully_created = create_post(request_body)
             if successfully_created:
+                message = {"message": "Successfully created"}
                 return self.response(
-                    "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
+                    json.dumps(message), status.HTTP_201_SUCCESS_CREATED.value
                 )
             return self.response(
                 "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
