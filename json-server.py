@@ -11,7 +11,7 @@ from views import (
 )
 from views import create_comment
 from views import create_tag, get_and_sort_tags
-from views import create_post
+from views import create_post, get_all_posts
 from views import post_category
 from views import create_posttag
 from views import get_categories
@@ -30,7 +30,11 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "posts":
             if url["pk"] == 0:
-                response_body = get_all_user_posts(url)
+                if "user_id" in url["query_params"]:
+                    logged_in_user_id = url["query_params"]["user_id"][0]
+                    response_body = get_all_user_posts(logged_in_user_id)
+                    return self.response(response_body, status.HTTP_200_SUCCESS.value)
+                response_body = get_all_posts()
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
             response_body = get_post(url["pk"])
@@ -54,12 +58,15 @@ class JSONServer(HandleRequests):
                     json.dumps(http_500_message),
                     status.HTTP_500_SERVER_ERROR.value,
                 )
-
-        else:
             return self.response(
                 json.dumps(http_404_message),
                 status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
             )
+
+        return self.response(
+            json.dumps(http_404_message),
+            status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
+        )
 
     def do_POST(self):
         http_404_message = {
@@ -228,11 +235,10 @@ class JSONServer(HandleRequests):
                 json.dumps(http_500_message), status.HTTP_500_SERVER_ERROR.value
             )
 
-        else:
-            return self.response(
-                json.dumps(http_404_message),
-                status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
-            )
+        return self.response(
+            json.dumps(http_404_message),
+            status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
+        )
 
     def do_PUT(self):
         pass

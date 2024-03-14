@@ -8,3 +8,4 @@ from .category import post_category
 from .post_tag import create_posttag
 from .category import get_categories
 from .tag import get_and_sort_tags
+from .post import get_all_posts
