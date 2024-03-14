@@ -11,7 +11,7 @@ from views import (
 )
 from views import create_comment
 from views import create_tag, get_and_sort_tags
-from views import create_post
+from views import create_post, get_all_posts
 from views import post_category
 from views import create_posttag
 from views import get_categories
@@ -25,16 +25,20 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "posts":
             if url["pk"] == 0:
-                response_body = get_all_user_posts(url)
+                if "user_id" in url["query_params"]:
+                    logged_in_user_id = url["query_params"]["user_id"][0]
+                    response_body = get_all_user_posts(logged_in_user_id)
+                    return self.response(response_body, status.HTTP_200_SUCCESS.value)
+                response_body = get_all_posts()
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-            response_body = get_post(url["pk"])
-            return self.response(response_body, status.HTTP_200_SUCCESS.value)
-        
+            else:
+                response_body = get_post(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
         elif url["requested_resource"] == "categories":
             response_body = get_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
-
 
         elif url["requested_resource"] == "tags":
             response_body = get_and_sort_tags()
@@ -168,8 +172,9 @@ class JSONServer(HandleRequests):
 
             successfully_created = create_post(request_body)
             if successfully_created:
+                message = {"message": "Successfully created"}
                 return self.response(
-                    "Successfully created", status.HTTP_201_SUCCESS_CREATED.value
+                    json.dumps(message), status.HTTP_201_SUCCESS_CREATED.value
                 )
             return self.response(
                 "An unexpected error occurred.", status.HTTP_500_SERVER_ERROR.value
